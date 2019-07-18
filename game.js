@@ -117,32 +117,71 @@ var callBack = function (event){ // when the colum is clicked
 
           setTimeout(function(){
           console.log('computer\'s turn');
-            // select one empty colum         
+            // select one empty colum  
+            var victory;       
             var slectedCol;
             var slectedColPos;
             var flag = true;
-            var count = 0;
+            var emptyCol;
             var emptyColIndex;
+            var twoXsRow ;
+            var twoOxRow ;
 
+
+        if(flag){ // 행 체크
+          colArr.forEach(function (row, index){
             
-        
-          colArr.forEach(function (row){
-             emptyColIndex = row.findIndex((ele)=> ele.textContent === '' );
-             console.log(emptyColIndex);
-          });   
+            emptyCol = row.filter((ele) => ele.textContent === '').length;
+            console.log('the number of empty colums :', emptyCol);
 
-        
+            if(emptyCol === 1){
+              emptyColIndex = row.findIndex((ele)=> ele.textContent === '' );
+            console.log(index, ' row ', ' empty Colum index :',emptyColIndex);
           
+            twoOxRow = row.filter(function(ele){
+              return ele.textContent === 'O';
+            }).length;
+            console.log(index, ' row ', 'number of O :', twoOxRow);
+
+            twoXsRow = row.filter(function(ele){
+              return ele.textContent === 'X';
+            }).length;
+            console.log(index, ' row ', 'number of X :', twoXsRow);
+
+            if(twoOxRow === 2){
+              slectedColPos = emptyColIndex;
+              slectedCol = colArr[index][slectedColPos];
+              slectedCol.textContent = 'O';
+              console.log(slectedCol);
+              victory = checkResult(index, slectedColPos);
+              flag = false;
+              return;
+            }            
+
+            if(twoXsRow === 2){
+              slectedColPos = emptyColIndex;
+              slectedCol = colArr[index][slectedColPos];
+              slectedCol.textContent = 'O';
+              console.log(slectedCol);
+              victory = checkResult(index, slectedColPos);
+              flag = false;
+              return;
+            }
+
+            }          
+         }); 
+        }
+                    
         if(flag) {
         slectedCol = candidateColArr[Math.floor(Math.random() * candidateColArr.length )];
         slectedCol.textContent = 'O'; 
-        }           
-          
-          // to check whether the computer won!
         var whichRow = rowArr.indexOf(slectedCol.parentNode);
         var whichCol = colArr[whichRow].indexOf(slectedCol);
 
-        var victory = checkResult(whichRow, whichCol);
+        victory = checkResult(whichRow, whichCol);
+        }           
+          
+          // to check whether the computer won!
 
         if(victory){ // 다 찼으면
          initialize();
