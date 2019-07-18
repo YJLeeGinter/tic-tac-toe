@@ -9,43 +9,44 @@ var result = document.createElement('div');
 
 function checkResult(whichRow, whichCol){
    // 세칸 다 채워졌나?
-    var full = false;
+    var victory = false;
    // check row
    if(colArr[whichRow][0].textContent === turn && 
      colArr[whichRow][1].textContent === turn && 
      colArr[whichRow][2].textContent === turn ){
-     full = true;
+     victory = true;
    }
    // check col
    if(colArr[0][whichCol].textContent === turn && 
      colArr[1][whichCol].textContent === turn && 
      colArr[2][whichCol].textContent === turn){
-     full = true;
+     victory = true;
    }
    // 대각선 검사
 
-   if(
-         colArr[0][0].textContent === turn &&
+   if(colArr[0][0].textContent === turn &&
          colArr[1][1].textContent === turn &&
-         colArr[2][2].textContent === turn 
-        ) 
-        full = true;
+         colArr[2][2].textContent === turn ) 
+        victory = true;
 
    if(colArr[0][2].textContent === turn &&
      colArr[1][1].textContent === turn &&
      colArr[2][0].textContent === turn) { // 대각선 검사 필요한 경우
     
-        full = true;
+        victory = true;
    }
 
-   return full;
+   return victory;
 
 }
 
-function initialize(){
+function initialize(draw){
   
-  result.textContent = turn + '님이 승리!';
-
+  if(draw){
+    result.textContent = 'It\'s a draw';
+  }else{
+    result.textContent = turn + '님이 승리!';
+  }
   // 초기화
 
   setTimeout(function(){
@@ -57,10 +58,7 @@ function initialize(){
   });
   turn = 'X';
   }, 1000)
-
-
 }
-
 
 var callBack = function (event){ // when the colum is clicked
   if(turn === 'O'){ // when it is the computer's turn, the user can't click
@@ -85,35 +83,67 @@ var callBack = function (event){ // when the colum is clicked
         console.log('빈칸입니다');
         colArr[whichRow][whichCol].textContent = turn;
 
-       var full = checkResult(whichRow, whichCol);
+        // to check whether every colum is full
+       var victory = checkResult(whichRow, whichCol);
 
-        if(full){ // 다 찼으면
+       var candidateColArr = [];
+
+           colArr.forEach(function (row){
+           /*  candidateColArr.push(row);
+             console.log(candidateColArr); */
+               row.forEach(function (col, index){
+                candidateColArr.push(col);
+                
+              } );
+          });
+        
+       candidateColArr = candidateColArr.filter(function (col) { return !col.textContent });  
+        
+     /*   candidateColArr.forEach(function(row, index){
+          candidateColArr[index] = candidateColArr[index].filter(function (col) { return !col.textContent }); 
+                })*/
+
+        console.log(candidateColArr);
+
+        if(victory){ // 다 찼으면
           
           initialize();
 
-        } else { // 다 안 찼으면
+        } else if(candidateColArr.length ===0){ // can't select a colum anymore
+        
+        initialize(true);
+
+        }else{ // 다 안 찼으면
 
           setTimeout(function(){
-            console.log('computer\'s turn');
-            // select one empty colum
-            var candidateColArr = [];
-            colArr.forEach(function (row){
-              row.forEach(function (col){
-                candidateColArr.push(col);
-              } );
-          });
+          console.log('computer\'s turn');
+            // select one empty colum         
+            var slectedCol;
+            var slectedColPos;
+            var flag = true;
 
-          candidateColArr = candidateColArr.filter(function (col) { return !col.textContent });  
-          var slectedCol = candidateColArr[Math.floor(Math.random() * candidateColArr.length )];
-          slectedCol.textContent = 'O';
+           colArr.forEach(function(row, index){
+            if(row[index][0] === row[index][1] ||
+              row[index][1] === row[index][2] ||
+              row[index][0] === row[index][2]){
+            flag = false;
+            slectedColPos = colArr.indexOf('');
+            slectedCol = colArr[index][slectedColPos];              
+            }
+          }) 
           
-          // to check whether the computer
-          var whichRow = rowArr.indexOf(slectedCol.parentNode);
+        if(flag) {
+          slectedCol = candidateColArr[Math.floor(Math.random() * candidateColArr.length )];
+        slectedCol.textContent = 'O'; 
+        }           
+          
+          // to check whether the computer won!
+        var whichRow = rowArr.indexOf(slectedCol.parentNode);
         var whichCol = colArr[whichRow].indexOf(slectedCol);
 
-        var full = checkResult(whichRow, whichCol);
+        var victory = checkResult(whichRow, whichCol);
 
-        if(full){ // 다 찼으면
+        if(victory){ // 다 찼으면
          initialize();
         }
 
@@ -126,12 +156,10 @@ var callBack = function (event){ // when the colum is clicked
             }else{
                 turn = 'X';
             }
-        }        
-
-    
+        }    
     }
-
 }
+
 // 표를 프로그래밍의 데이터로 시뮬레이션을 한다
 // 코드랑 화면이랑 매치
 // 코드랑 화면 쌍방향 대응. 조작했을때
@@ -155,3 +183,4 @@ body.append(result);
 
 console.log('row: ',rowArr);
 console.log('colums: ',colArr);
+
