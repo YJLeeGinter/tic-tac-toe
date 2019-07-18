@@ -91,7 +91,7 @@ var callBack = function (event){ // when the colum is clicked
            colArr.forEach(function (row){
            /*  candidateColArr.push(row);
              console.log(candidateColArr); */
-               row.forEach(function (col, index){
+               row.forEach(function (col){
                 candidateColArr.push(col);
                 
               } );
@@ -121,19 +121,20 @@ var callBack = function (event){ // when the colum is clicked
             var slectedCol;
             var slectedColPos;
             var flag = true;
+            var count = 0;
+            var emptyColIndex;
 
-           colArr.forEach(function(row, index){
-            if(row[index][0] === row[index][1] ||
-              row[index][1] === row[index][2] ||
-              row[index][0] === row[index][2]){
-            flag = false;
-            slectedColPos = colArr.indexOf('');
-            slectedCol = colArr[index][slectedColPos];              
-            }
-          }) 
+            
+        
+          colArr.forEach(function (row){
+             emptyColIndex = row.findIndex((ele)=> ele.textContent === '' );
+             console.log(emptyColIndex);
+          });   
+
+        
           
         if(flag) {
-          slectedCol = candidateColArr[Math.floor(Math.random() * candidateColArr.length )];
+        slectedCol = candidateColArr[Math.floor(Math.random() * candidateColArr.length )];
         slectedCol.textContent = 'O'; 
         }           
           
