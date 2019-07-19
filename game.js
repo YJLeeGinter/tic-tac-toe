@@ -82,13 +82,15 @@ function checkXandO(arr){
       return ele.textContent === 'X';
     }).length;
 
-    if(twoOxRow === 2){
-      return emptyColIndex;
-    }            
 
-    if(twoXsRow === 2){
+    if(twoOxRow === 2){
+      count = 0;
       return emptyColIndex;
-    }
+    }  
+    
+    if(twoOxRow!==2 && twoXsRow === 2){
+      return emptyColIndex;
+    } // O와 X가 둘다 2일때 버그 발생!
   }
   
   return;
