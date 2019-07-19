@@ -8,7 +8,6 @@ var turn = 'X';
 var result = document.createElement('div');
 
 var victory;
-
 var flag ;
 
 function checkResult(whichRow, whichCol){
@@ -63,7 +62,6 @@ function initialize(draw){
   turn = 'X';
   }, 1000)
 }
-
 
 function checkXandO(arr){
   var emptyCol;
@@ -164,7 +162,7 @@ var callBack = function (event){ // when the colum is clicked
           colArr.forEach(function (row, index){
            
             var rowColIndex = checkXandO(row);
-            if(rowValue || rowValue === 0){
+            if(rowColIndex || rowColIndex === 0){
             flag = false;              
             slectedCol = colArr[index][rowColIndex];
             slectedCol.textContent = 'O';
@@ -172,14 +170,38 @@ var callBack = function (event){ // when the colum is clicked
             }
             })          
         }
+
+        if(flag){ // 열 체크
+          var tempArrForCheckCol = [];
+          var tempArr;
+          for(var p=0; p <3; p +=1){
+             tempArr=[];
+            for(var q=0; q <3; q +=1){
+              tempArr.push(colArr[q][p]);
+            }
+            tempArrForCheckCol.push(tempArr);
+          }
+
+          tempArrForCheckCol.forEach(function (row, index){
+           
+            var colRowIndex = checkXandO(row);
+            if(colRowIndex || colRowIndex === 0){
+            flag = false;              
+            slectedCol = colArr[colRowIndex][index];
+            slectedCol.textContent = 'O';
+            victory = checkResult(colRowIndex, index);
+            }
+            })         
+        }
+
         
         if(flag){ // 대각선 체크
           var leftDiagonalLine = [];
           var rightDiagonalLine = [];
 
-          for(var m =0; m <3; m +=1){
-            leftDiagonalLine.push(colArr[m][m]);
-            rightDiagonalLine.push(colArr[m][2-m]);
+          for(var n =0; n <3; n +=1){
+            leftDiagonalLine.push(colArr[n][n]);
+            rightDiagonalLine.push(colArr[n][2-n]);
           }
       
           var leftIndexRowCol = checkXandO(leftDiagonalLine);
