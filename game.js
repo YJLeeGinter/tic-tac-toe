@@ -66,7 +66,9 @@ function checkXandO(arr){
   var emptyCol;
   var emptyColIndex;
   var twoXsRow ;
+  var oneORow;
   var twoOxRow ;
+
   console.log(arr);
 
   emptyCol = arr.filter((ele) => ele.textContent === '').length;
@@ -85,16 +87,39 @@ function checkXandO(arr){
     if(twoOxRow === 2){
       console.log('O 인덱스 반환');
       return emptyColIndex;
-
     }  
+
     if(twoXsRow === 2){
         console.log('X 인덱스 반환');
         return emptyColIndex;
-      } // O와 X가 둘다 2일때 버그 발생! 
-    
-    }
-  
+      } // O와 X가 둘다 2일때 버그 발생!     
+    }   
+}
 
+function checkO (arr){
+  var emptyCol;
+  var emptyColIndex;
+  var oneORow;
+
+  console.log(arr);
+
+  emptyCol = arr.filter((ele) => ele.textContent === '').length;
+  // console.log(emptyCol);
+  if(emptyCol === 2){
+    oneORow = arr.filter(function(ele){
+      return ele.textContent === 'O';
+    }).length;    
+
+    emptyColIndex = arr.findIndex((ele)=> ele.textContent === '' );
+    // console.log(emptyColIndex);
+    
+      
+    if(twoOxRow === 1){
+      console.log('O 인덱스 반환');
+      return emptyColIndex;
+    }  
+     
+    }  
 }
 
 var callBack = function (event){ // when the colum is clicked
@@ -126,8 +151,6 @@ var callBack = function (event){ // when the colum is clicked
        var candidateColArr = [];
 
            colArr.forEach(function (row){
-           /*  candidateColArr.push(row);
-             console.log(candidateColArr); */
                row.forEach(function (col){
                 candidateColArr.push(col);
                 
@@ -158,8 +181,9 @@ var callBack = function (event){ // when the colum is clicked
             var flag = true;
             var slectedCol;
             var whichRow;
-            var whichCol;
-
+            var whichCol; 
+            var order;
+            var checkArr =[];
             var leftDiagonalLine = [];
             var rightDiagonalLine = [];
 
@@ -167,26 +191,9 @@ var callBack = function (event){ // when the colum is clicked
             leftDiagonalLine.push(colArr[n][n]);
             rightDiagonalLine.push(colArr[n][2-n]);
           }
-      
-        // 행체크하고 나서 O가 2개 있으면 
+          checkObject.left = leftDiagonalLine;
+          console.log(checkObject);
 
-        if(flag){ // 행 체크
-           for(var s =0; s <3; s +=1){
-            var index = s;
-            var rowColIndex = checkXandO(colArr[index]);
-            if(rowColIndex || rowColIndex === 0){
-            flag = false;              
-            slectedCol = colArr[index][rowColIndex];
-            slectedCol.textContent = 'O';
-            victory = checkResult(index, rowColIndex);
-            console.log('행 체크');
-            break;
-           }
-            
-            }
-        }
-
-        if(flag){ // 열 체크
           var tempArrForCheckCol = [];
           var tempArr;
           for(var p=0; p <3; p +=1){
@@ -196,15 +203,31 @@ var callBack = function (event){ // when the colum is clicked
             }
             tempArrForCheckCol.push(tempArr);
           }
+        // 행체크하고 나서 O가 2개 있으면 
+
+        if(flag){ // 행 체크
+           for(var s =0; s <3; s +=1){
+            var rowColIndex = checkXandO(colArr[s]);
+            if(rowColIndex || rowColIndex === 0){
+            flag = false;              
+            slectedCol = colArr[s][rowColIndex];
+            slectedCol.textContent = 'O';
+            victory = checkResult(s, rowColIndex);
+            console.log('행 체크');
+            break;
+           }
+         }
+        }
+
+        if(flag){ // 열 체크         
           
           for(var z =0; z <3; z +=1){
-            var index = z;
-            var colRowIndex = checkXandO(colArr[index]);
+            var colRowIndex = checkXandO(tempArrForCheckCol[z]);
               if(colRowIndex || colRowIndex === 0){
               flag = false;              
-              slectedCol = colArr[colRowIndex][index];
+              slectedCol = colArr[colRowIndex][z];
               slectedCol.textContent = 'O';
-              victory = checkResult(colRowIndex, index);
+              victory = checkResult(colRowIndex, z);
               console.log('열 체크');
               break;
               }  
@@ -212,7 +235,7 @@ var callBack = function (event){ // when the colum is clicked
         }
 
         
-        if(flag){ // 대각선 체크
+        if(flag){ // 왼쪽 대각선 체크
           
           var leftIndexRowCol = checkXandO(leftDiagonalLine);
 
@@ -225,7 +248,7 @@ var callBack = function (event){ // when the colum is clicked
           } 
         }
 
-        if(flag){
+        if(flag){ // 오른쪽 대각선 체크
           var rightIndexRow = checkXandO(rightDiagonalLine);
 
           if(rightIndexRow || rightIndexRow === 0){
