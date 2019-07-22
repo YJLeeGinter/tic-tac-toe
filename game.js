@@ -62,66 +62,6 @@ function initialize(draw){
   }, 2000)
 }
 
-function checkXandO(arr){
-  var emptyCol;
-  var emptyColIndex;
-  var twoXsRow ;
-  var oneORow;
-  var twoOxRow ;
-
-  console.log(arr);
-
-  emptyCol = arr.filter((ele) => ele.textContent === '').length;
-  // console.log(emptyCol);
-  if(emptyCol === 1){
-    emptyColIndex = arr.findIndex((ele)=> ele.textContent === '' );
-    // console.log(emptyColIndex);
-    twoOxRow = arr.filter(function(ele){
-      return ele.textContent === 'O';
-    }).length;
-
-    twoXsRow = arr.filter(function(ele){
-      return ele.textContent === 'X';
-    }).length;
-      
-    if(twoOxRow === 2){
-      console.log('O 인덱스 반환');
-      return emptyColIndex;
-    }  
-
-    if(twoXsRow === 2){
-        console.log('X 인덱스 반환');
-        return emptyColIndex;
-      } // O와 X가 둘다 2일때 버그 발생!     
-    }   
-}
-
-function checkO (arr){
-  var emptyCol;
-  var emptyColIndex;
-  var oneORow;
-
-  console.log(arr);
-
-  emptyCol = arr.filter((ele) => ele.textContent === '').length;
-  // console.log(emptyCol);
-  if(emptyCol === 2){
-    oneORow = arr.filter(function(ele){
-      return ele.textContent === 'O';
-    }).length;    
-
-    emptyColIndex = arr.findIndex((ele)=> ele.textContent === '' );
-    // console.log(emptyColIndex);
-    
-      
-    if(twoOxRow === 1){
-      console.log('O 인덱스 반환');
-      return emptyColIndex;
-    }  
-     
-    }  
-}
-
 var callBack = function (event){ // when the colum is clicked
   if(turn === 'O'){ // when it is the computer's turn, the user can't click
     return;
@@ -158,12 +98,6 @@ var callBack = function (event){ // when the colum is clicked
           });
         
        candidateColArr = candidateColArr.filter(function (col) { return !col.textContent });  
-        
-     /*   candidateColArr.forEach(function(row, index){
-          candidateColArr[index] = candidateColArr[index].filter(function (col) { return !col.textContent }); 
-                })*/
-
-      //  console.log(candidateColArr);
 
         if(victory){ // 다 찼으면
           
@@ -178,91 +112,147 @@ var callBack = function (event){ // when the colum is clicked
           setTimeout(function(){
           console.log('computer\'s turn');
             // select one empty colum  
-            var flag = true;
+            var random = true;
             var slectedCol;
             var whichRow;
             var whichCol; 
-            var order;
-            var checkArr =[];
-            var leftDiagonalLine = [];
+          
+            var leftDiagonalLine = [];       
             var rightDiagonalLine = [];
 
-          for(var n =0; n <3; n +=1){
-            leftDiagonalLine.push(colArr[n][n]);
-            rightDiagonalLine.push(colArr[n][2-n]);
-          }
-          checkObject.left = leftDiagonalLine;
-          console.log(checkObject);
-
-          var tempArrForCheckCol = [];
-          var tempArr;
+            var tempArrForCheckCol = [];
+            var tempArr;
           for(var p=0; p <3; p +=1){
              tempArr=[];
             for(var q=0; q <3; q +=1){
               tempArr.push(colArr[q][p]);
             }
             tempArrForCheckCol.push(tempArr);
-          }
-        // 행체크하고 나서 O가 2개 있으면 
+          }       
 
-        if(flag){ // 행 체크
-           for(var s =0; s <3; s +=1){
-            var rowColIndex = checkXandO(colArr[s]);
-            if(rowColIndex || rowColIndex === 0){
-            flag = false;              
-            slectedCol = colArr[s][rowColIndex];
-            slectedCol.textContent = 'O';
-            victory = checkResult(s, rowColIndex);
-            console.log('행 체크');
-            break;
-           }
-         }
-        }
-
-        if(flag){ // 열 체크         
+          for(var n =0; n <3; n +=1){
+            leftDiagonalLine.push(colArr[n][n]);
+            rightDiagonalLine.push(colArr[n][2-n]);
+          }        
           
-          for(var z =0; z <3; z +=1){
-            var colRowIndex = checkXandO(tempArrForCheckCol[z]);
-              if(colRowIndex || colRowIndex === 0){
-              flag = false;              
-              slectedCol = colArr[colRowIndex][z];
+          var lineObj ={
+            row1 : colArr[0],
+            row2 : colArr[1],
+            row3 : colArr[2],
+            col1 : tempArrForCheckCol[0],
+            col2 : tempArrForCheckCol[1],
+            col3 : tempArrForCheckCol[2],
+            left : leftDiagonalLine,
+            right : rightDiagonalLine,
+          };   
+
+          console.log(lineObj);
+          
+          function checkObject(turn, num){
+            var filteredObj ={};
+             Object.keys(lineObj).forEach(function(key) {
+              var turnChecked = lineObj[key].filter((ele) => ele.textContent === turn);
+
+              if(turnChecked.length === num){ 
+                  filteredObj[key] = lineObj[key];   
+                }                              
+            })
+            console.log(filteredObj);
+            return filteredObj;
+          }
+          
+          var twoOsObj = checkObject('O', 2);
+          console.log('two OO : ', twoOsObj);
+          var twoXsObj = checkObject('X', 2);
+          console.log('two XX : ', twoXsObj);
+          var oneOObjet = checkObject('O', 1);
+          console.log('one O : ', oneOObjet);
+
+
+          function checkRow(rowIndex, emptyColIndex){
+              slectedCol = colArr[rowIndex][emptyColIndex];
               slectedCol.textContent = 'O';
-              victory = checkResult(colRowIndex, z);
+              victory = checkResult(rowColIndex, emptyColIndex);
+              console.log('행 체크');
+          }
+
+          function checkCol(emptyColIndex, colIndex){
+              slectedCol = colArr[emptyColIndex][colIndex];
+              slectedCol.textContent = 'O';
+              victory = checkResult(emptyColIndex, colIndex);
               console.log('열 체크');
-              break;
-              }  
-          }           
-        }
+          }
 
-        
-        if(flag){ // 왼쪽 대각선 체크
-          
-          var leftIndexRowCol = checkXandO(leftDiagonalLine);
-
-          if(leftIndexRowCol || leftIndexRowCol === 0){ // 0은 거짓 값이라서 0인 경우 작동 안함
-            flag = false;   
-            slectedCol = colArr[leftIndexRowCol][leftIndexRowCol];
+          function checkLeft(emptyColIndex, emptyColIndex){
+            slectedCol = colArr[emptyColIndex][emptyColIndex];
             slectedCol.textContent = 'O';
-            victory = checkResult(leftIndexRowCol, leftIndexRowCol);
-            console.log('대각선 체크');
-          } 
-        }
-
-        if(flag){ // 오른쪽 대각선 체크
-          var rightIndexRow = checkXandO(rightDiagonalLine);
-
-          if(rightIndexRow || rightIndexRow === 0){
-            flag = false;                     
-            var rightIndexCol = 2-rightIndexRow;
-            slectedCol = colArr[rightIndexRow][rightIndexCol];
-            slectedCol.textContent = 'O';
-            victory = checkResult(rightIndexRow, rightIndexCol);
+            victory = checkResult(emptyColIndex, emptyColIndex);
             console.log('대각선 체크');
           }
 
-        }
-                    
-        if(flag) { // random
+          function checkRight(emptyColIndex, emptyColIndex){
+            var rightIndexCol = 2-emptyColIndex;
+            slectedCol = colArr[emptyColIndex][rightIndexCol];
+            slectedCol.textContent = 'O';
+            victory = checkResult(emptyColIndex, rightIndexCol);
+            console.log('대각선 체크');
+          }
+
+          function checkPos(indicator, emptyColIndex){
+            switch(indicator){
+              case 'row1' : checkRow(0, emptyColIndex);
+              break;
+              case 'row2' : checkRow(1, emptyColIndex);
+              break;
+              case 'row3' : checkRow(2, emptyColIndex);
+              break;
+              case 'col1' : checkCol(emptyColIndex, 0);
+              break;
+              case 'col2' : checkCol(emptyColIndex, 1);
+              break;
+              case 'col3' : checkCol(emptyColIndex, 2);
+              break;
+              case 'left' : checkLeft(emptyColIndex, emptyColIndex);
+              break;
+              case 'right' : checkRight(emptyColIndex, emptyColIndex);
+              break;
+            }
+          }
+
+          if(Object.keys(twoOsObj).length !== 0){
+            var indicator = Object.getOwnPropertyNames(twoOsObj);
+            console.log(indicator);
+            var emptyColIndex = lineObj[indicator[0]].findIndex((ele) => ele.textContent === '');
+          
+            checkPos(indicator, emptyColIndex);
+
+            twoXsObj = {};
+            oneOObjet = {};  
+            random = false;          
+          }
+
+          if(Object.keys(twoXsObj).length !== 0 ){
+            var indicator = Object.getOwnPropertyNames(twoXsObj);
+            console.log(indicator);
+            var indicatorValue = lineObj[0];
+
+            var emptyColIndex = lineObj[indicatorValue].findIndex((ele) => ele.textContent === '');
+              
+            checkPos(indicator, emptyColIndex);
+
+            oneOObjet = {};   
+            random = false;         
+          }
+
+          if(Object.keys(oneOObjet).length !== 0 ){
+            var indicator = Object.getOwnPropertyNames(oneOObjet);
+            var emptyColIndex = lineObj[indicator[Math.floor(Math.random() * indicator.length)]].findIndex((ele) => ele.textContent === '');
+            
+            checkPos(indicator, emptyColIndex);
+            random = false;                       
+          }         
+                 
+        if(random) { // random
         slectedCol = candidateColArr[Math.floor(Math.random() * candidateColArr.length )];
         slectedCol.textContent = 'O'; 
         whichRow = rowArr.indexOf(slectedCol.parentNode);
