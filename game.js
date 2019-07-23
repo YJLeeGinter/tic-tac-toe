@@ -145,15 +145,14 @@ var callBack = function (event){ // when the colum is clicked
             left : leftDiagonalLine,
             right : rightDiagonalLine,
           };   
-
-          console.log(lineObj);
           
-          function checkObject(turn, num){
+          function checkObject(turn, num, emptyColNum){
             var filteredObj ={};
              Object.keys(lineObj).forEach(function(key) {
               var turnChecked = lineObj[key].filter((ele) => ele.textContent === turn);
+              var emptyColChecked = lineObj[key].filter((ele) => ele.textContent === '');
 
-              if(turnChecked.length === num){ 
+              if(turnChecked.length === num && emptyColChecked.length === emptyColNum){ 
                   filteredObj[key] = lineObj[key];   
                 }                              
             })
@@ -161,18 +160,18 @@ var callBack = function (event){ // when the colum is clicked
             return filteredObj;
           }
           
-          var twoOsObj = checkObject('O', 2);
+          var twoOsObj = checkObject('O', 2, 1);
           console.log('two OO : ', twoOsObj);
-          var twoXsObj = checkObject('X', 2);
+          var twoXsObj = checkObject('X', 2, 1);
           console.log('two XX : ', twoXsObj);
-          var oneOObjet = checkObject('O', 1);
+          var oneOObjet = checkObject('O', 1, 2);
           console.log('one O : ', oneOObjet);
 
 
           function checkRow(rowIndex, emptyColIndex){
               slectedCol = colArr[rowIndex][emptyColIndex];
               slectedCol.textContent = 'O';
-              victory = checkResult(rowColIndex, emptyColIndex);
+              victory = checkResult(rowIndex, emptyColIndex);
               console.log('행 체크');
           }
 
@@ -198,8 +197,8 @@ var callBack = function (event){ // when the colum is clicked
             console.log('대각선 체크');
           }
 
-          function checkPos(indicator, emptyColIndex){
-            switch(indicator){
+          function checkPos(randomKey, emptyColIndex){
+            switch(randomKey){
               case 'row1' : checkRow(0, emptyColIndex);
               break;
               case 'row2' : checkRow(1, emptyColIndex);
@@ -219,36 +218,33 @@ var callBack = function (event){ // when the colum is clicked
             }
           }
 
-          if(Object.keys(twoOsObj).length !== 0){
-            var indicator = Object.getOwnPropertyNames(twoOsObj);
-            console.log(indicator);
-            var emptyColIndex = lineObj[indicator[0]].findIndex((ele) => ele.textContent === '');
-          
-            checkPos(indicator, emptyColIndex);
+          function startCheck(objElement){
+            var indicator = Object.getOwnPropertyNames(objElement); 
+            var randomKey = indicator[Math.floor(Math.random() * indicator.length)]; 
+            console.log(randomKey);     
 
+            var emptyColIndex = lineObj[randomKey].findIndex((ele) => ele.textContent === '');
+                      
+            checkPos(randomKey, emptyColIndex);    
+          }
+
+          if(Object.keys(twoOsObj).length !== 0){
+               
+            startCheck(twoOsObj);
             twoXsObj = {};
             oneOObjet = {};  
             random = false;          
           }
 
           if(Object.keys(twoXsObj).length !== 0 ){
-            var indicator = Object.getOwnPropertyNames(twoXsObj);
-            console.log(indicator);
-            var indicatorValue = lineObj[0];
-
-            var emptyColIndex = lineObj[indicatorValue].findIndex((ele) => ele.textContent === '');
-              
-            checkPos(indicator, emptyColIndex);
-
+           
+            startCheck(twoXsObj);
             oneOObjet = {};   
             random = false;         
           }
 
           if(Object.keys(oneOObjet).length !== 0 ){
-            var indicator = Object.getOwnPropertyNames(oneOObjet);
-            var emptyColIndex = lineObj[indicator[Math.floor(Math.random() * indicator.length)]].findIndex((ele) => ele.textContent === '');
             
-            checkPos(indicator, emptyColIndex);
             random = false;                       
           }         
                  
