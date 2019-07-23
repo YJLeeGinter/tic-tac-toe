@@ -244,7 +244,7 @@ var callBack = function (event){ // when the colum is clicked
           }
 
           if(Object.keys(oneOObjet).length !== 0 ){
-            
+            startCheck(oneOObjet);
             random = false;                       
           }         
                  
